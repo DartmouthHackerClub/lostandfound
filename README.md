@@ -106,6 +106,6 @@ can use the following configuration to keep gunicorn running all the
 time:
 
     [program:app_name]
-    command = /home/deploy/env/app_name/bin/gunicorn -b 127.0.0.1:1337 -w 2
+    command = /home/deploy/env/app_name/bin/gunicorn app:app -b 127.0.0.1:1337 -w 2
     directory = /home/deploy/env/app_name/app_name
     user = deploy
