@@ -1,4 +1,3 @@
-import pprint
 import urllib
 import requests
 from lxml import etree

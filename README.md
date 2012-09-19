@@ -109,3 +109,15 @@ time:
     command = /home/deploy/env/app_name/bin/gunicorn app:app -b 127.0.0.1:1337 -w 2
     directory = /home/deploy/env/app_name/app_name
     user = deploy
+
+### Automate updates with fabric
+
+I've included a `fabfile.py` which greatly simplifies pushing new code
+to the staging and production servers. To deploy the latest code to the
+testing server:
+
+    $ fab test deploy
+
+Or to the production server:
+
+    $ fab prod deploy
