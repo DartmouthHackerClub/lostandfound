@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-{% if session.username %}
-<h1>Welcome, {{ session.username }}!</h1>
+{% if session.user %}
+<h1>Welcome, {{ session.user.name }}!</h1>
 <h2><a href="{{ url_for('logout') }}">Logout</a></h2>
 {% else %}
 <h1>You aren't logged in.</h1>
