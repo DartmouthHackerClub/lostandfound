@@ -1,7 +1,7 @@
 import urllib
 import requests
 from lxml import etree
-from flask import Blueprint, request, redirect, session, url_for, escape, render_template
+from flask import Blueprint, request, redirect, session, url_for
 
 flask_cas = Blueprint('flask_cas', __name__, template_folder='templates')
 

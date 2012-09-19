@@ -6,17 +6,17 @@ def test():
     env.user = 'deploy'
 
 def prod():
-    env.hosts = ['production.hacktown.cs.dartmouth.edu']
-    env.user = 'deploy'
+    env.hosts = ['flask.hacktown.cs.dartmouth.edu']
+    env.user = 'zach'
 
 def update():
-    with cd('/home/deploy/env/app_name/app_name'):
+    with cd('/srv/http/flask/env/flask_template'):
         run('git pull')
         with prefix('source ../bin/activate'):
             run('pip install -r requirements.txt')
 
 def restart():
-    sudo('supervisorctl restart app_name')
+    sudo('supervisorctl restart flask')
 
 def deploy():
     update()
