@@ -4,8 +4,8 @@
 <ul class="thumbnails">
 {% for item in items %}
 <li class="span4">
-<a href="{{ url_for('item', id=item.id) }}">
-    <img src="{{ item.image }}" />
+<a href="{{ url_for('item', item_id=item.id) }}">
+    <img src="{{ item.image_url() }}" />
 </a>
 </li>
 {% endfor %}
