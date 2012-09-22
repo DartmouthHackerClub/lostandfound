@@ -1,0 +1,6 @@
+Flask>=0.9
+requests>=0.14.0
+gunicorn>=0.14.6
+Cython>=0.17
+lxml>=3.0alpha2
+Fabric>=1.4.3
