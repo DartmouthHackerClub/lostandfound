@@ -43,6 +43,8 @@ def add():
             filename = secure_filename(image.filename)
             image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             item = Item()
+            item.email = get_email(session['user'])
+            item.image = filename
             db.session.add(item)
             db.session.commit()
     return render_template('add.html')
@@ -53,7 +55,7 @@ def image(filename):
 
 @app.route("/item/<int:item_id>/")
 def item(item_id):
-    return item_id
+    return render_template('item.html', item=Item.query.get(item_id))
 
 @app.route("/")
 def index():
