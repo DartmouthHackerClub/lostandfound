@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-{% if session.user %}
-<h1>Welcome, {{ session.user.name }}!</h1>
-<h2><a href="{{ url_for('flask_cas.logout') }}">Logout</a></h2>
-{% else %}
-<h1>You aren't logged in.</h1>
-<h2><a href="{{ url_for('flask_cas.login') }}">Login</a></h2>
-{% endif %}
+<h1>Lost</h1>
+<ul class="thumbnails">
+{% for item in items %}
+<li class="span4">
+<a href="{{ url_for('item', id=item.id) }}">
+    <img src="{{ item.image }}" />
+</a>
+</li>
+{% endfor %}
+</ul>
 {% endblock %}
