@@ -1,5 +1,5 @@
 from flask import Flask, request, redirect, session, url_for, render_template
-from flask_cas import flask_cas
+from flask_cas import flask_cas, require_login
 from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -14,8 +14,9 @@ class Item(db.Model):
     email = db.Column(db.String(120))
 
 @app.route("/")
+@require_login
 def index():
     return render_template('index.html', items=Item.query.all())
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True, port=5001)

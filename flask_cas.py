@@ -1,6 +1,7 @@
 import urllib
 import requests
 from lxml import etree
+from functools import wraps
 from flask import Blueprint, request, redirect, session, url_for
 
 flask_cas = Blueprint('flask_cas', __name__, template_folder='templates')
@@ -36,3 +37,12 @@ def login():
 def logout():
     session.pop('user', None)
     return redirect(url_for('index'))
+
+def require_login(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        print session
+        if 'user' not in session:
+            return redirect(url_for('login'))
+        return fn(*args, **kwargs)
+    return wrapper
