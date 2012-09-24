@@ -4,17 +4,9 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug import secure_filename
 from flask_cas import flask_cas, login_required
 
-UPLOAD_FOLDER = '/tmp/lostandfound/uploads'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
-
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
 app = Flask(__name__)
+app.config.from_pyfile('local_settings.py')
 app.register_blueprint(flask_cas)
-app.secret_key = 'this/ought%to*be^changed'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 db = SQLAlchemy(app)
 
 class Item(db.Model):
@@ -23,14 +15,14 @@ class Item(db.Model):
     email = db.Column(db.String(120))
 
     def image_url(self):
-        if self.image:
+        if app.debug:
             return url_for('image', filename=self.image)
         else:
-            return 'http://lorempixel.com/400/200'
+            return '/images/%s' % self.image
 
 def allowed_file(filename):
     return '.' in filename and \
-        filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+        filename.rsplit('.', 1)[1] in set(['png', 'jpg', 'jpeg'])
 
 def get_email(user):
     return user['netid'] + '@kiewit.dartmouth.edu'
@@ -42,7 +34,7 @@ def add():
         image = request.files.get('image', None)
         if image and allowed_file(image.filename):
             filename = secure_filename(image.filename)
-            image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], 'images', filename))
             item = Item()
             item.email = get_email(session['user'])
             item.image = filename
@@ -50,10 +42,11 @@ def add():
             db.session.commit()
     return render_template('add.html')
 
-@app.route("/images/<filename>")
-@login_required
-def image(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+if app.debug:
+    @app.route("/images/<filename>")
+    @login_required
+    def image(filename):
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route("/item/<int:item_id>/")
 @login_required
@@ -66,4 +59,4 @@ def index():
     return render_template('index.html', items=Item.query.all())
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True, port=5001)
+    app.run(host='0.0.0.0', debug=app.debug, port=5001)
