@@ -2,7 +2,15 @@
 {% block content %}
 <div class="row">
     <div class="span3">
+        {% if get_email(session.user) == item.email %}
+        {% if item.claimed %}
+        <a class="btn btn-large btn-inverse btn-block" href="{{ url_for('claim_item', item_id=item.id) }}">Mark as lost</a>
+        {% else %}
+        <a class="btn btn-large btn-block" href="{{ url_for('claim_item', item_id=item.id) }}">Mark as found</a>
+        {% endif %}
+        {% else %}
         <a class="btn btn-large btn-primary btn-block" href="mailto:{{ item.email }}?subject=You found my stuff">Claim this item</a>
+        {% endif %}
     </div>
     <div class="span9">
         <img src="{{ item.image_url() }}">
