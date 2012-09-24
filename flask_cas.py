@@ -38,11 +38,10 @@ def logout():
     session.pop('user', None)
     return redirect(url_for('index'))
 
-def require_login(fn):
+def login_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        print session
         if 'user' not in session:
-            return redirect(url_for('login'))
+            return redirect(url_for('.login'))
         return fn(*args, **kwargs)
     return wrapper

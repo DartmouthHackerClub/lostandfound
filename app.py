@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, redirect, session, url_for, render_template, send_from_directory
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug import secure_filename
-from flask_cas import flask_cas, require_login
+from flask_cas import flask_cas, login_required
 
 UPLOAD_FOLDER = '/tmp/lostandfound/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
@@ -36,6 +36,7 @@ def get_email(user):
     return user['netid'] + '@kiewit.dartmouth.edu'
 
 @app.route("/add/", methods=["GET", "POST"])
+@login_required
 def add():
     if request.method == "POST":
         image = request.files.get('image', None)
@@ -50,15 +51,17 @@ def add():
     return render_template('add.html')
 
 @app.route("/images/<filename>")
+@login_required
 def image(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route("/item/<int:item_id>/")
+@login_required
 def item(item_id):
     return render_template('item.html', item=Item.query.get(item_id))
 
 @app.route("/")
-@require_login
+@login_required
 def index():
     return render_template('index.html', items=Item.query.all())
 
