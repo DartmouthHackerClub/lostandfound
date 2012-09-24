@@ -34,7 +34,10 @@ def add():
         image = request.files.get('image', None)
         if image and allowed_file(image.filename):
             filename = secure_filename(image.filename)
-            image.save(os.path.join(app.config['UPLOAD_FOLDER'], 'images', filename))
+            image_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'images')
+            if not os.path.isdir(image_dir):
+                os.makedirs(image_dir)
+            image.save(os.path.join(image_dir, filename))
             item = Item()
             item.email = get_email(session['user'])
             item.image = filename
