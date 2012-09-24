@@ -42,6 +42,6 @@ def login_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         if 'user' not in session:
-            return redirect(url_for('.login'))
+            return redirect(url_for('flask_cas.login'))
         return fn(*args, **kwargs)
     return wrapper
