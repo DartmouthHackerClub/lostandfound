@@ -13,7 +13,9 @@
         {% endif %}
     </div>
     <div class="span9">
-        <img src="{{ item.image_url() }}">
+        <a class="thumbnail" href="{{ item.image_url() }}">
+            <img src="{{ item.image_url() }}">
+        </a>
     </div>
 </div>
 {% endblock %}
