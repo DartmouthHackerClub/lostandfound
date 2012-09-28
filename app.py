@@ -1,7 +1,6 @@
 import os
 from flask import Flask, request, redirect, session, url_for, render_template, send_from_directory, abort
 from flask.ext.sqlalchemy import SQLAlchemy
-from werkzeug import secure_filename
 from flask_cas import flask_cas, login_required
 
 app = Flask(__name__)
@@ -37,15 +36,16 @@ def add():
     if request.method == "POST":
         image = request.files.get('image', None)
         if image and allowed_file(image.filename):
-            filename = secure_filename(image.filename)
             image_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'images')
             if not os.path.isdir(image_dir):
                 os.makedirs(image_dir)
-            image.save(os.path.join(image_dir, filename))
             item = Item()
             item.email = get_email(session['user'])
-            item.image = filename
             db.session.add(item)
+            db.session.commit()
+            filename = "%s.%s" % (item.id, image.filename.rsplit('.')[-1])
+            image.save(os.path.join(image_dir, filename))
+            item.image = filename
             db.session.commit()
     return render_template('add.html')
 
