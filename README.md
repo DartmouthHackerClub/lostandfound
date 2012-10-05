@@ -1,20 +1,16 @@
-The Hacker Club Flask Template
+Lost and Found
 ==============================
 
-Introduction
-------------
+Uses flask CAS Template
 
-This template provides a starting point for new Hacker Club Flask
-projects.
+Introduction
+----------
 
 Features include:
 
--   Dartmouth CAS authentication pre-configured
--   Latest Twitter Bootstrap and jQuery from CDN
--   Jinja2 templating pre-configured
-
-Usage
+Setup
 -----
+
 
 Assuming you already have Python and pip installed, go ahead and install
 `virtualenv` if you haven't already:
@@ -24,23 +20,29 @@ Assuming you already have Python and pip installed, go ahead and install
 Now, create a new virtualenv (this provides an isolated environment for
 the app to run in):
 
-    $ virtualenv <project_name>
-    $ cd project_name
+    $ virtualenv lostandfound
+    $ cd lostandfound
     $ source bin/activate
 
 The virtualenv is now set up. You can clone this repository inside the
 virtualenv:
 
-    $ git clone https://github.com/DartmouthHackerClub/flask_template.git
+    $ git clone https://github.com/DartmouthHackerClub/lostandfound.git
 
 I've included a `requirements.txt` file, which, coupled with pip and
 virtualenv, provides an automatic method for installing all necessary
 dependencies:
 
-    $ cd flask_template
+    $ cd lostandfound
     $ pip install -r requirements.txt
 
-Everything is now set up. You can now launch the app:
+To change the settings before running, you must do the following:
+
+    $ nano default_settings.py
+
+Edit settings and save as local_settings.py
+
+Everything should now set up. You can now launch the app:
 
     $ python app.py
 
