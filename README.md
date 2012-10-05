@@ -36,9 +36,9 @@ dependencies:
     $ cd lostandfound
     $ pip install -r requirements.txt
 
-To change the settings before running, you must do the following:
+Then setup the sqlite database by running:
 
-    $ nano default_settings.py
+    $ ./setup_db
 
 Edit settings and save as local_settings.py
 
