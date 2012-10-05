@@ -8,11 +8,26 @@ app.config.from_pyfile('local_settings.py')
 app.register_blueprint(flask_cas)
 db = SQLAlchemy(app)
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    netid = db.Column(db.String(15), unique=True)
+    full_name = db.Column(db.String(200))
+
+    found_items = db.relationship("Item", backref="finder")
+
+    def email(self):
+        return "%s@dartmouth.edu" % self.netid
+
+    def __repr__(self):
+        return str(self.netid)
+
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(200))
     email = db.Column(db.String(120))
     claimed = db.Column(db.Boolean, default=False)
+
+    finder_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def image_url(self):
         if app.debug:
