@@ -14,6 +14,11 @@ class User(db.Model):
     full_name = db.Column(db.String(200))
 
     found_items = db.relationship("Item", backref="finder")
+    claims = db.relationship("Item", secondary=claims, backref="claimers")
+
+    def __init__(self, full_name, netid):
+        self.full_name = full_name
+        self.netid = netid
 
     def email(self):
         return "%s@dartmouth.edu" % self.netid
@@ -21,11 +26,14 @@ class User(db.Model):
     def __repr__(self):
         return str(self.netid)
 
+claims = db.Table('claims',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('item_id', db.Integer, db.ForeignKey('item.id'))
+)
+
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(200))
-    email = db.Column(db.String(120))
-    claimed = db.Column(db.Boolean, default=False)
 
     finder_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -42,10 +50,16 @@ def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1] in set(['png', 'jpg', 'jpeg'])
 
-def get_email(user):
-    return user['netid'] + '@kiewit.dartmouth.edu'
+@app.before_request
+def fetch_user():
+    if 'cas_user' in session:
+        g['user'] = User.query.filter_by(netid=session['cas_user']['netid'].first())
+        if g['user'] is None:
+            g['user'] = User(session['cas_user']['name'], session['cas_user']['netid'])
+            db.session.add(g['user'])
+            db.session.commit()
 
-@app.route("/add/", methods=["GET", "POST"])
+@app.route("/add/", methods=["POST"])
 @login_required
 def add():
     if request.method == "POST":
@@ -55,7 +69,7 @@ def add():
             if not os.path.isdir(image_dir):
                 os.makedirs(image_dir)
             item = Item()
-            item.email = get_email(session['user'])
+            item.finder = g['user']
             db.session.add(item)
             db.session.commit()
             filename = "%s.%s" % (item.id, image.filename.rsplit('.')[-1])
@@ -75,7 +89,15 @@ if app.debug:
 @login_required
 def claim_item(item_id):
     item = Item.query.get(item_id)
-    item.claimed = not item.claimed
+    item.claimers.append(g["user"])
+    db.session.commit()
+    return redirect(url_for('item', item_id=item_id))
+
+@app.route("/item/<int:item_id>/unclaim")
+@login_required
+def claim_item(item_id):
+    item = Item.query.get(item_id)
+    item.claims.remove(g["user"])
     db.session.commit()
     return redirect(url_for('item', item_id=item_id))
 
@@ -85,7 +107,7 @@ def item(item_id):
     item = Item.query.get(item_id)
     if item is None:
         abort(404)
-    return render_template('item.html', item=item, get_email=get_email)
+    return render_template('item.html', item=item, cur_user=g['user'])
 
 @app.route("/")
 @login_required
